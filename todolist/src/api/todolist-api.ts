@@ -50,7 +50,7 @@ export type GetTasksResponse = {
   items: TaskType[]
 }
 
-type UpdateTasksType = {
+type UpdateTasksModelType = {
   title: string
   description: string
   completed: boolean
@@ -83,12 +83,12 @@ export const todolistAPI = {
     return promise
   },
   createTask(todolistId: string, title: string) {
-    return instance.post(`todo-lists/${todolistId}/tasks`, {title: title})
+    return instance.post<ResponseType<TaskType>>(`todo-lists/${todolistId}/tasks`, {title: title})
   },
   deleteTask(todolistId: string, taskId: string) {
     return instance.delete<ResponseType>(`todo-lists/${todolistId}/tasks/${taskId}`)
   },
   updateTask(todolistId: string, taskId: string, title: string) {
-    return instance.put<UpdateTasksType>(`todo-lists/${todolistId}/tasks/${taskId}`, {title: title})
+    return instance.put<UpdateTasksModelType>(`todo-lists/${todolistId}/tasks/${taskId}`, {title: title})
   }
 }
