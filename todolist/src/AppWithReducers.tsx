@@ -9,11 +9,12 @@ import {addTaskAC, changeTaskStatusAC, changeTaskTitleAC, removeTaskAC, tasksRed
 import {
   addTodoListAC,
   changeTodolistFilterAC,
-  changeTodolistTitleAC,
+  changeTodolistTitleAC, FilterValuesType,
   removeTodolistAC,
   todolistsReducer
 } from "./state/todolists-reducer";
-import {FilterValuesType} from "./App";
+import {TaskPriorities, TaskStatuses} from "./api/todolist-api";
+
 
 
 function App() {
@@ -22,8 +23,8 @@ function App() {
   let todolistID2 = v1()
 
   let [todolists, dispatchToTodolist] = useReducer(todolistsReducer, [
-    {id: todolistID1, title: 'What to learn', filter: 'all'},
-    {id: todolistID2, title: 'What to buy', filter: 'all'},
+    {id: todolistID1, title: 'What to learn', filter: 'all',addedDate: "", order: 0},
+    {id: todolistID2, title: 'What to buy', filter: 'all', addedDate: "", order: 0},
   ])
   //TodoLists
   const removeTodolist = (todolistId: string) => {
@@ -46,14 +47,19 @@ function App() {
 
   let [tasks, dispatchToTasks] = useReducer(tasksReducer, {
     [todolistID1]: [
-      {id: v1(), title: 'HTML&CSS', isDone: true},
-      {id: v1(), title: 'JS', isDone: true},
-      {id: v1(), title: 'ReactJS', isDone: false},
+      {id: v1(), title: 'HTML&CSS', status: TaskStatuses.Completed, addedDate: '', deadline: '', order: 0, description: "",
+        priority: TaskPriorities.Middle, startDate: "", todoListId: todolistID1},
+      {id: v1(), title: 'JS', status: TaskStatuses.Completed, addedDate: '', deadline: '', order: 0, description: "",
+        priority: TaskPriorities.Middle, startDate: "", todoListId: todolistID1},
+      {id: v1(), title: 'ReactJS', status: TaskStatuses.New, addedDate: '', deadline: '', order: 0, description: "",
+        priority: TaskPriorities.Middle, startDate: "", todoListId: todolistID1},
 
     ],
     [todolistID2]: [
-      {id: v1(), title: 'Rest API', isDone: true},
-      {id: v1(), title: 'GraphQL', isDone: false},
+      {id: v1(), title: 'Rest API', status: TaskStatuses.Completed, addedDate: '', deadline: '', order: 0, description: "",
+        priority: TaskPriorities.Low, startDate: "", todoListId: todolistID2},
+      {id: v1(), title: 'GraphQL', status: TaskStatuses.New, addedDate: '', deadline: '', order: 0, description: "",
+        priority: TaskPriorities.Low, startDate: "", todoListId: todolistID2},
     ]
   })
   //Tasks
@@ -69,8 +75,8 @@ function App() {
     const action = changeTaskTitleAC(todolistId, taskId, newTitle)
     dispatchToTasks(action)
   }
-  const changeTaskStatus = (todolistId: string, taskId: string, isDone: boolean) => {
-    const action = changeTaskStatusAC(todolistId, taskId, isDone)
+  const changeTaskStatus = (todolistId: string, taskId: string, status: TaskStatuses) => {
+    const action = changeTaskStatusAC(todolistId, taskId, status)
     dispatchToTasks(action)
   }
 
@@ -88,10 +94,10 @@ function App() {
               let taskForTodoList = allTodolistTasks // в переменную tasksForTodolists копируем все наши таски
 
               if (todolist.filter === "active") {
-                taskForTodoList = allTodolistTasks.filter(task => !task.isDone)
+                taskForTodoList = allTodolistTasks.filter(task => task.status === TaskStatuses.New)
               }
               if (todolist.filter === "completed") {
-                taskForTodoList = allTodolistTasks.filter(task => task.isDone)
+                taskForTodoList = allTodolistTasks.filter(task => task.status === TaskStatuses.Completed)
               }
               return <Grid item>
                 <Paper style={{padding: "10px"}}>

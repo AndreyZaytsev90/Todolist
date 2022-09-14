@@ -1,21 +1,21 @@
-import React, {ChangeEvent, useCallback} from 'react';
-
+import React, {useCallback} from 'react';
 import {AddItemForm} from "./AddItemForm";
 import {EditableSpan} from "./EditableSpan";
-import {Button, Checkbox, IconButton} from "@mui/material";
+import {Button, IconButton} from "@mui/material";
 import {Delete} from "@mui/icons-material";
-import {FilterValuesType, TasksType} from "./AppWithRedux";
 import {Task} from "./Task";
+import {FilterValuesType} from "./state/todolists-reducer";
+import {TaskStatuses, TaskType} from "./api/todolist-api";
 
 
 type TodoListPropsType = {
   id: string
   title: string
-  tasks: Array<TasksType>
+  tasks: Array<TaskType>
   removeTask: (todolistId: string, taskId: string) => void
   changeFilter: (todolistId: string, filter: FilterValuesType,) => void
   addTask: (todolistId: string, title: string) => void
-  changeTaskStatus: (todolistId: string, taskId: string, isDone: boolean) => void
+  changeTaskStatus: (todolistId: string, taskId: string, status: TaskStatuses) => void
   changeTaskTitle: (todolistId: string, taskId: string, newTitle: string) => void
   removeTodolist: (todolistId: string) => void
   changeTodolistTitle: (todolistId: string, newTitle: string) => void
@@ -42,10 +42,10 @@ const TodoList = React.memo((props: TodoListPropsType) => {
   let taskForTodoList = props.tasks // в переменную tasksForTodolists копируем все наши таски
 
   if (props.filter === "active") {
-    taskForTodoList = props.tasks.filter(task => !task.isDone)
+    taskForTodoList = props.tasks.filter(task => task.status === TaskStatuses.New)
   }
   if (props.filter === "completed") {
-    taskForTodoList = props.tasks.filter(task => task.isDone)
+    taskForTodoList = props.tasks.filter(task => task.status === TaskStatuses.Completed)
   }
 
   return (

@@ -1,8 +1,7 @@
 import {v1} from "uuid";
 import {AddTodoListType, RemoveTodolistType, SetTodolistType} from "./todolists-reducer";
-import {TasksStateType, TasksType} from "../AppWithRedux";
 import {Dispatch} from "redux";
-import {todolistAPI} from "../api/todolist-api";
+import {TaskPriorities, TaskStatuses, TaskType, todolistAPI} from "../api/todolist-api";
 
 
 // меня вызовут и дадут мне стейт (почти всегда объект)
@@ -11,6 +10,13 @@ import {todolistAPI} from "../api/todolist-api";
 
 
 let initialState: TasksStateType = {}
+
+export type TasksStateType = {
+    [key: string]: Array<TaskType>
+}
+/*export type TaskDomainType = TaskType & {
+    status: TaskStatuses
+}*/
 
 export const tasksReducer = (state: TasksStateType = initialState, action: TasksReducerType): TasksStateType => {
     switch (action.type) {
@@ -26,7 +32,15 @@ export const tasksReducer = (state: TasksStateType = initialState, action: Tasks
                 [action.payload.todolistId]: [{
                     id: v1(),
                     title: action.payload.title,
-                    isDone: false
+                    //isDone: false,
+                    addedDate: '',
+                    deadline: '',
+                    order: 0,
+                    description: "",
+                    priority: TaskPriorities.Middle,
+                    startDate: "",
+                    status: TaskStatuses.New,
+                    todoListId: action.payload.todolistId
                 }, ...state[action.payload.todolistId]]
             }
         }
@@ -35,7 +49,7 @@ export const tasksReducer = (state: TasksStateType = initialState, action: Tasks
                 ...state,
                 [action.payload.todolistId]: state[action.payload.todolistId].map(
                     task => task.id === action.payload.taskId
-                        ? {...task, isDone: action.payload.isDone}
+                        ? {...task, status: action.payload.status}
                         : task
                 )
             }
@@ -113,10 +127,10 @@ export const addTaskAC = (todolistId: string, title: string) => {
         payload: {todolistId, title}
     } as const
 }
-export const changeTaskStatusAC = (todolistId: string, taskId: string, isDone: boolean) => {
+export const changeTaskStatusAC = (todolistId: string, taskId: string, status: TaskStatuses) => {
     return {
         type: 'CHANGE-TASK-STATUS',
-        payload: {todolistId, taskId, isDone}
+        payload: {todolistId, taskId, status}
     } as const
 }
 export const changeTaskTitleAC = (todolistId: string, taskId: string, newTaskTitle: string) => {
@@ -125,7 +139,7 @@ export const changeTaskTitleAC = (todolistId: string, taskId: string, newTaskTit
         payload: {todolistId, taskId, newTaskTitle}
     } as const
 }
-export const setTasksAC = (todolistId: string, tasks: Array<TasksType>) => {
+export const setTasksAC = (todolistId: string, tasks: Array<TaskType>) => {
     return {
         type: "SET-TASKS",
         payload: {todolistId, tasks}
