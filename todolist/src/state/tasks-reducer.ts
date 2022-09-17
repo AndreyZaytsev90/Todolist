@@ -151,7 +151,6 @@ export const fetchTasksTC = (todolistId: string) => {
     return (dispatch: Dispatch) => {
         todolistAPI.getTasks(todolistId)
             .then((res) => {
-                // @ts-ignore
                 dispatch(setTasksAC(todolistId, res.data.items))
             })
     }
